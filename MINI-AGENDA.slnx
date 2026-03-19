@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/Database/">
+    <File Path="01_CreateTable.sql" />
+  </Folder>
   <Project Path="MINI-AGENDA/MINI-AGENDA.csproj" />
 </Solution>
