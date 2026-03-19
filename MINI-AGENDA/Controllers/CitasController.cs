@@ -109,17 +109,13 @@ namespace MINI_AGENDA.Controllers
         /// <summary>
         /// Cancelar cita validando que no esté ya cancelada, que no sea una cita pasada y registrando el motivo de cancelación.
         /// </summary>
-        [HttpPut("CancelarCita/{idcita}")]
+        [HttpPut("CancelarCita/{idcita}/{motivo}")]
         public async Task<IActionResult> CancelarCita(int idcita, string motivo)
         {
             try {
                 var cita = await _citaService.CancelarCita(idcita, motivo);
 
-                return Ok(new
-                {
-                    mensaje = "Cita cancelada correctamente"
-                   
-                });
+                return Ok(cita);
             }
              catch (Exception ex)
             {

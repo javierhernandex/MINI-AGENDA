@@ -11,7 +11,7 @@ namespace MINI_AGENDA.Services.IServices
         Task<IEnumerable<Cita>> GetCitaIdMedico(int idmedico,DateTime? fecha);
         Task<IEnumerable<Cita>> GetCitaIdPaciente(int idpaciente, DateTime? fecha);
         Task<IEnumerable<Cita>> GetCitaAll();
-        Task<bool> CancelarCita(int idcita, string motivo);
+        Task<CancelarCitaResponse> CancelarCita(int idcita, string motivo);
         Task<bool> Crearcita(Cita cita);
     }
 }

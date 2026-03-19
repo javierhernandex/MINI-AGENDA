@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using MINI_AGENDA.Models.Cita;
+using MINI_AGENDA.Models.Exceptions;
 using MINI_AGENDA.Models.Medico;
 using MINI_AGENDA.Models.Pacientes;
 using MINI_AGENDA.Repository;
@@ -27,13 +28,13 @@ namespace MINI_AGENDA.Services
             var existemedico = await _repoMedico.GetMedicoid(idMedico);
             if (existemedico == null)
             {
-                throw new Exception("Medico no encontrado");
+                throw new NotFoundException("Medico no encontrado");
             }
 
             var horario = await _repo.GetHorarioAtencions(idMedico, diaSemana);
 
             if (horario == null)
-                throw new Exception("El médico no tiene horario ese día");
+                throw new NotFoundException("El médico no tiene horario ese día");
 
             return await _repo.GetHorarioDisponible(idMedico, fecha);
         }
@@ -43,7 +44,7 @@ namespace MINI_AGENDA.Services
             var citas = await _repo.GetCitasAll();
             if (citas.Count() == 0)
             {
-                throw new Exception("No se encontraron citas");
+                throw new NotFoundException("No se encontraron citas");
             }
             return await _repo.GetCitasAll();
         }
@@ -52,12 +53,12 @@ namespace MINI_AGENDA.Services
             var existemedico = await _repoMedico.GetMedicoid(idmedico);
             if (existemedico == null)
             {
-                throw new Exception("Medico no encontrado");
+                throw new NotFoundException("Medico no encontrado");
             }
             var citas = await _repo.GetCitaIdMedico(idmedico,fecha);
             if (citas.Count() == 0)
             {
-                throw new Exception($"No se encontraron citas para el médico con ID {idmedico} ");
+                throw new NotFoundException($"No se encontraron citas para el médico con ID {idmedico} ");
             }
 
             return await _repo.GetCitaIdMedico(idmedico,fecha);
@@ -68,61 +69,71 @@ namespace MINI_AGENDA.Services
 
             if (existepaciente == null)
             {
-                throw new Exception($"No existe paciente con ID {idpaciente}");
+                throw new NotFoundException($"No existe paciente con ID {idpaciente}");
             }
 
 
             var citas = await _repo.GetCitaIdPaciente(idpaciente,fecha);
             if (citas.Count() == 0)
             {
-                throw new Exception($"No se encontraron citas para el paciente con ID {idpaciente}");
+                throw new NotFoundException($"No se encontraron citas para el paciente con ID {idpaciente}");
             }
 
             return await _repo.GetCitaIdPaciente(idpaciente,fecha);
         }
-        public async Task<bool> CancelarCita(int idcita, string motivo)
+        public async Task<CancelarCitaResponse> CancelarCita(int idcita, string motivo)
         {
             var existecita = await _repo.GetCitaId(idcita);
 
             if (existecita == null)
             {
-                throw new Exception($"No existe cita con ID {idcita}");
+                throw new NotFoundException($"No existe cita con ID {idcita}");
             }
             if (existecita.estado == "Cancelada")
             {
-                throw new Exception($"La cita con ID {idcita} ya está cancelada");
+                throw new ConflictException($"La cita con ID {idcita} ya está cancelada");
             }
             var fechaHoraCita = existecita.fechaCita.Date + existecita.horaCita;
 
             if (fechaHoraCita < DateTime.Now)
-                throw new Exception("No puedes cancelar una cita pasada");
+                throw new BadRequestException("No puedes cancelar una cita pasada");
 
             var result = await _repo.CancelarCita(idcita, motivo);
             if (!result)
             {
-                throw new Exception($"No se pudo cancelar la cita con ID {idcita}");
+                throw new BadRequestException($"No se pudo cancelar la cita con ID {idcita}");
             }
-            return result;
+            var totalCancelaciones = await _repo.ContarCancelacionesPaciente(existecita.idpaciente);
+
+            return new CancelarCitaResponse
+            {
+                success = true,
+                mensaje = totalCancelaciones > 3
+                    ? "Cita cancelada. Advertencia: el paciente tiene múltiples cancelaciones"
+                    : "Cita cancelada correctamente",
+                advertencia = totalCancelaciones >= 3
+            };
+          
         }
         public async Task<bool> Crearcita(Cita cita)
         {
             var existemedico = await _repoMedico.GetMedicoid(cita.idmedico);
             if (existemedico == null)
             {
-                throw new Exception("Medico no encontrado");
+                throw new NotFoundException("Medico no encontrado");
             }
             var medicotieneespecialidad = await _repoMedico.MedicoTienEspecialidad(cita.idmedico);
             if (!medicotieneespecialidad)
-                throw new Exception("El médico no tiene especialidad asignada");
+                throw new ConflictException("El médico no tiene especialidad asignada");
 
             var existepaciente = await _repoPaciente.GetPacienteid(cita.idpaciente);
             if (existepaciente == null)
             {
-                throw new Exception($"No existe paciente con ID {cita.idpaciente}");
+                throw new NotFoundException($"No existe paciente con ID {cita.idpaciente}");
             }
             var fechaHoraCita = cita.fechaCita.Date + cita.horaCita;
             if (fechaHoraCita < DateTime.Now)
-                throw new Exception("No puedes crear una cita en el pasado");
+                throw new ConflictException("No puedes crear una cita en el pasado");
 
             var especialidadmedico = await _repoMedico.GetMedicoEspecialidad(cita.idmedico);
             var duracion = await _repoMedico.GetEspecialidad(especialidadmedico.idEspecialidad);
@@ -133,18 +144,17 @@ namespace MINI_AGENDA.Services
             var diaSemana = (int)cita.fechaCita.DayOfWeek;
             var horario = await _repo.GetHorarioAtencions(cita.idmedico, diaSemana);
 
+            if(horario==null)
+                throw new ConflictException("El medico no cuenta con horario en esta fecha");
+
             if (horaInicio < horario.horainicio || horaFin > horario.horafin)
-                throw new Exception("La cita está fuera del horario del médico");
+                throw new ConflictException("La cita está fuera del horario del médico");
 
             var horarioDisponible = await _repo.GetHorarioDisponible(cita.idmedico, cita.fechaCita);
             if (!horarioDisponible.Any(h => h.hora == cita.horaCita))
-                throw new Exception("El horario no está disponible para el médico en esa fecha");
+                throw new ConflictException("El horario no está disponible para el médico en esa fecha");
 
-            
-
-
-
-
+          
             var newcita = new Cita
             {
                 idmedico = cita.idmedico,
@@ -161,7 +171,7 @@ namespace MINI_AGENDA.Services
             var result = await _repo.CrearCita(newcita);
             if (!result)
             {
-                throw new Exception("No se pudo crear la cita");
+                throw new BadRequestException("No se pudo crear la cita");
             }
             return result;
         }

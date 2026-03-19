@@ -168,4 +168,10 @@ namespace MINI_AGENDA.Repository
                 c.estado == "Activa" &&
                 c.fechaCita >= DateTime.Today);
         }
+        public async Task<int> ContarCancelacionesPaciente(int idpaciente)
+        {
+            return await _bd.Cita.CountAsync(c =>
+                c.idpaciente == idpaciente &&
+                c.estado == "Cancelada");
+        }
     } }

@@ -15,5 +15,6 @@ namespace MINI_AGENDA.Repository.IRepository
         Task<bool> CrearCita(Cita cita);
         Task <bool> TieneCitasProximas(int idpaciente);
         Task<bool> TieneCitasProximasMedico(int idmedico);
+        Task<int> ContarCancelacionesPaciente(int idpaciente);
     }
 }
