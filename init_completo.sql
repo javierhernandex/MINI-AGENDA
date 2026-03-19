@@ -119,7 +119,7 @@ go
 
 IF EXISTS (SELECT * FROM sys.tables WHERE name = 'Paciente' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-IF NOT EXISTS (SELECT TOP 1 1 FROM MedicoEspecialidad)
+IF NOT EXISTS (SELECT TOP 1 1 FROM Paciente)
 	begin
 	insert into Paciente (nombre,apellido,fechaNacimiento,telefono,email) values('Juan Pedro','Valencia Guzman','1993-01-03','9991231212','example@gmail,com')
 	insert into Paciente (nombre,apellido,fechaNacimiento,telefono,email) values('Fernanda Maria','Guzman Gonzales','1995-03-17','9996576212','fernanda@gmail,com')
@@ -213,4 +213,3 @@ BEGIN
     )
     ORDER BY h.hora;
 END
-

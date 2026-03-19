@@ -4,5 +4,6 @@ GO
 USE MiniAgenda;
 GO
 
--- Tablas
-:r ./01_CreateBase.sql
+-- Importante: Usa la ruta donde mapeaste el volumen en el docker-compose
+:r /scripts/01_CreateBase.sql
+GO

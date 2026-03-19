@@ -20,19 +20,22 @@ Estructura del proyecto
 -Database/ → Scripts SQL
 
 
-Base de Datos
+Usar docker para dezplegar y probar las api's.
+- descargar docker desktop https://www.docker.com/products/docker-desktop/ (segun el sistema y arquitectura de tu equipo)
+- Una vez intalado ubicar la carpeta del proyecto y abrir la terminar en la ruta de este
+- ejecutar el siguiente comando en la terminal para construir la imagen y ejecutar el contenedor:
+	docker compose up --build
 
-Ejecutar el script:
--Database/01_CreateBase.sql
 
-
-Configuración
-
-Editar appsettings.json con los datos del servidor donde se creo la base.
-
-"ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=MiniAgenda;Trusted_Connection=True;"
-}
+Si se requiere probar la aplicacion creando la base de datos manualmente, se debe seguir los siguientes pasos:
+  Base de Datos
+	Ejecutar el script:
+		-Database/01_CreateBase.sql
+	Configuración
+		Editar appsettings.json con los datos del servidor donde se creo la base.
+		"ConnectionStrings": {
+		  "DefaultConnection": "Server=.;Database=MiniAgenda;Trusted_Connection=True;"
+		}
 
 
  Endpoints 
@@ -114,6 +117,9 @@ Pciente
 -No se pueden eliminar pacientes con citas activas
 -No se pueden eliminar medicos con citas activas
 -No se pueden agendar citas fuera del horario que tiene configurado el medico
+-No se pueden agendar citas para medicos sin especialidad asignada
+-No se pueden agendar citas en fechas pasadas
+-Si la fecha introducida para agendar una cita, te devulve las proximas 5 citas disponibles para ese medico en esa fecha, si no hay citas disponibles te devulve un mensaje indicando que no hay citas disponibles para ese medico en esa fecha.
 
 
 

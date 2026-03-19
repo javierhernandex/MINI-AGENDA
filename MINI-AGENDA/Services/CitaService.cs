@@ -152,8 +152,24 @@ namespace MINI_AGENDA.Services
 
             var horarioDisponible = await _repo.GetHorarioDisponible(cita.idmedico, cita.fechaCita);
             if (!horarioDisponible.Any(h => h.hora == cita.horaCita))
-                throw new ConflictException("El horario no está disponible para el médico en esa fecha");
+            {
+                
+                var sugerencias = horarioDisponible
+                                 .Where(h => h.hora > cita.horaCita)
+                                .OrderBy(h => h.hora)
+                                .Take(5)
+                                .Select(h => h.hora.ToString(@"hh\:mm")) 
+                                .ToList();
 
+              
+                string listaSugerencias = sugerencias.Any()
+                    ? string.Join(", ", sugerencias)
+                    : "No hay más citas disponibles para hoy";
+
+                throw new ConflictException($"El horario {cita.horaCita:hh\\:mm} no está disponible. " +
+                                            $"Próximas opciones: {listaSugerencias}");
+               
+            }
           
             var newcita = new Cita
             {
