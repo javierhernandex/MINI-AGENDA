@@ -1,3 +1,10 @@
 <Solution>
+  <Folder Name="/Database/">
+    <File Path="01_CreateBase.sql" />
+  </Folder>
+  <Folder Name="/Elementos de la solución/">
+    <File Path="docker-compose.yml" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="MINI-AGENDA/MINI-AGENDA.csproj" />
 </Solution>

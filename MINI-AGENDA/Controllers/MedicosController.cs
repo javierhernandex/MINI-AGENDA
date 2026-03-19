@@ -1,21 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MINI_AGENDA.Dtos.Medico;
+﻿using Microsoft.AspNetCore.Mvc;
 using MINI_AGENDA.Models.Medico;
 using MINI_AGENDA.Services.IServices;
 
 namespace MINI_AGENDA.Controllers
 {
-    [Route("api/MiniAgenda")]
+    [Route("api/Medicos")]
     [ApiController]
     public class MedicosController : Controller
     {
-        private readonly MiniAgendaDbContext _MiniAgendaDbContext;
+      
         private readonly IMedicoService _MedicoService;
-        public MedicosController(MiniAgendaDbContext MPBConfigDbContext_,IMedicoService medicoService_)
+        public MedicosController(IMedicoService medicoService_)
         {
-            this._MiniAgendaDbContext = MPBConfigDbContext_;
             this._MedicoService = medicoService_;
         }
 

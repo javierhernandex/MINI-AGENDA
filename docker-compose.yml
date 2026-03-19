@@ -1,0 +1,29 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SqlPass.2026!
+    ports:
+      - "1434:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: MINI-AGENDA/Dockerfile
+    container_name: api_miniagenda
+    ports:
+      - "5000:8080"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__MINIAGENDA=Server=sqlserver;Database=MiniAgenda;User Id=sa;Password=SqlPass.2026!;TrustServerCertificate=True;
+    restart: always
+    
+
+volumes:
+  sql_data:
