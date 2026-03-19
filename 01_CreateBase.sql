@@ -1,11 +1,5 @@
 
-IF not EXISTS (SELECT name FROM sys.databases WHERE name = 'MiniAgenda')
-BEGIN
-   create database MiniAgenda
-END
-go
 
-use MiniAgenda
 go
 IF not EXISTS (SELECT * FROM sys.tables WHERE name = 'Medico' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN

@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Database/">
     <File Path="01_CreateBase.sql" />
+    <File Path="init.sql" />
   </Folder>
   <Folder Name="/Elementos de la solución/">
     <File Path="docker-compose.yml" />
