@@ -25,18 +25,28 @@ services:
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MiniAgenda;User=sa;Password=YourStrong!Pass123;TrustServerCertificate=True;
 
   db_init:
-    image: mcr.microsoft.com/mssql-tools
-    container_name: db_init_miniagenda
-    depends_on:
-      - sqlserver
-    volumes:
-      - ./Database:/scripts
-    entrypoint: >
-      /bin/bash -c "
-      echo 'Esperando SQL Server...';
-      sleep 20;
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P YourStrong!Pass123 -i /scripts/init.sql;
-      echo 'Base de datos creada'; "
+   image: mcr.microsoft.com/mssql-tools
+  container_name: db_init_miniagenda
+  depends_on:
+    - sqlserver
+  volumes:
+    - ./Database:/scripts
+  entrypoint: >
+    /bin/bash -c "
+    echo 'Esperando SQL Server...';
+
+    until /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P YourStrong!Pass123 -Q 'SELECT 1' > /dev/null 2>&1
+    do
+      echo 'SQL Server no listo, esperando...';
+      sleep 5;
+    done;
+
+    echo 'SQL Server listo, ejecutando scripts...';
+
+    /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P YourStrong!Pass123 -i /scripts/init.sql;
+
+    echo 'Base de datos creada correctamente';
+    "
 
 volumes:
   sql_data:
