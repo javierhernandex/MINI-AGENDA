@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_miniagenda
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Pass123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./MINI-AGENDA
+      dockerfile: Dockerfile
+    container_name: api_miniagenda
+    ports:
+      - "5000:80"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MiniAgenda;User=sa;Password=YourStrong!Pass123;TrustServerCertificate=True;
+
+volumes:
+  sql_data:

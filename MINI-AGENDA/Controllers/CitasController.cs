@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using MINI_AGENDA.Models.Cita;
-using MINI_AGENDA.Models.Pacientes;
-using MINI_AGENDA.Models.Medico;
 using MINI_AGENDA.Repository.IRepository;
-using MINI_AGENDA.Repository;
 using MINI_AGENDA.Services.IServices;
 
 namespace MINI_AGENDA.Controllers
 {
+    [Route("api/Citas")]
+    [ApiController]
     public class CitasController : Controller
     {
         private readonly MiniAgendaDbContext _MiniAgendaDbContext;
