@@ -102,14 +102,14 @@ namespace MINI_AGENDA
                             db.SaveChanges();
                        
                             db.Especialidad.AddRange(
-                                 new Especialidad {  Descripcion = "Medicina General", DuracionCita = 20 },
-                                 new Especialidad {  Descripcion = "Cardiología", DuracionCita = 30 },
-                                 new Especialidad {  Descripcion = "Cirugía", DuracionCita = 45 },
-                                 new Especialidad {  Descripcion = "Pediatría", DuracionCita = 20 },
-                                 new Especialidad {  Descripcion = "Ginecología", DuracionCita = 30 },
-                                 new Especialidad {  Descripcion = "Urologia", DuracionCita = 50 },
-                                 new Especialidad {  Descripcion = "Oncologia", DuracionCita = 30 },
-                                 new Especialidad {  Descripcion = "Neumologia", DuracionCita = 45 }
+                                 new Especialidad {  Descripcion = "Medicina General", DuracionCita = 20 ,Estatus=true},
+                                 new Especialidad {  Descripcion = "Cardiología", DuracionCita = 30,Estatus=true},
+                                 new Especialidad {  Descripcion = "Cirugía", DuracionCita = 45,Estatus=true},
+                                 new Especialidad {  Descripcion = "Pediatría", DuracionCita = 20  ,Estatus=true},
+                                 new Especialidad {  Descripcion = "Ginecología", DuracionCita = 30,Estatus=true },
+                                 new Especialidad {  Descripcion = "Urologia", DuracionCita = 50,Estatus=true },
+                                 new Especialidad {  Descripcion = "Oncologia", DuracionCita = 30,Estatus=true },
+                                 new Especialidad {  Descripcion = "Neumologia", DuracionCita = 45 ,Estatus=true}
                              );
 
                             db.SaveChanges();
